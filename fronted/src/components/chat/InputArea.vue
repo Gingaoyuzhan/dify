@@ -2,6 +2,13 @@
 import { ref } from 'vue'
 import { Send, Paperclip, Mic, Sparkles } from 'lucide-vue-next'
 
+// Props
+const props = withDefaults(defineProps<{
+  disabled?: boolean
+}>(), {
+  disabled: false
+})
+
 const emit = defineEmits<{
   (e: 'send', text: string): void
 }>()
@@ -9,7 +16,7 @@ const emit = defineEmits<{
 const input = ref('')
 
 const send = () => {
-  if (!input.value.trim()) return
+  if (!input.value.trim() || props.disabled) return
   emit('send', input.value)
   input.value = ''
 }
@@ -23,35 +30,36 @@ const onKeydown = (e: KeyboardEvent) => {
 </script>
 
 <template>
-  <div class="input-wrapper">
+  <div class="input-wrapper" :class="{ disabled }">
     <div class="neo-input-group">
-      <button class="icon-btn left neo-press" title="Upload File">
+      <button class="icon-btn left neo-press" title="Upload File" :disabled="disabled">
         <Paperclip :size="24" stroke-width="2.5" />
       </button>
-      
-      <textarea 
+
+      <textarea
         v-model="input"
-        placeholder="TYPE COMMAND..." 
+        placeholder="TYPE COMMAND..."
         class="neo-textarea"
         rows="1"
+        :disabled="disabled"
         @keydown="onKeydown"
       ></textarea>
-      
+
       <div class="right-actions">
-        <button class="icon-btn neo-press" v-if="!input" title="Voice Input">
+        <button class="icon-btn neo-press" v-if="!input" title="Voice Input" :disabled="disabled">
           <Mic :size="24" stroke-width="2.5" />
         </button>
-        <button 
-          class="neo-send-btn neo-press" 
-          v-else 
+        <button
+          class="neo-send-btn neo-press"
+          v-else
           @click="send"
-          :disabled="!input.trim()"
+          :disabled="!input.trim() || disabled"
         >
           <Send :size="24" stroke-width="2.5" />
         </button>
       </div>
     </div>
-    
+
     <div class="footer-note">
       <Sparkles :size="14" stroke-width="2.5" />
       <span>AI GENERATED CONTENT. VERIFY OUTPUTS.</span>
@@ -148,6 +156,12 @@ const onKeydown = (e: KeyboardEvent) => {
   background: var(--bg-surface-secondary);
   color: var(--text-secondary);
   cursor: not-allowed;
+}
+
+/* 禁用状态 */
+.input-wrapper.disabled {
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 .footer-note {

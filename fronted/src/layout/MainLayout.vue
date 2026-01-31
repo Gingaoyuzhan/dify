@@ -1,23 +1,40 @@
 <script setup lang="ts">
-import { Bot, Layers, Database } from 'lucide-vue-next'
+import { ref, onMounted } from 'vue'
+import { Bot, Layers, Database, Sun, Moon, LogOut } from 'lucide-vue-next'
 import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
+
+const isDark = ref(false)
 
 const navItems = [
   { name: 'Workflow', path: '/workflow', icon: Layers },
   { name: 'Knowledge', path: '/knowledge', icon: Database },
   { name: 'Agent', path: '/agent', icon: Bot },
 ]
+
+const toggleTheme = () => {
+  isDark.value = !isDark.value
+  document.documentElement.setAttribute('data-theme', isDark.value ? 'dark' : 'light')
+  localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
+}
+
+onMounted(() => {
+  const savedTheme = localStorage.getItem('theme') || 'light'
+  isDark.value = savedTheme === 'dark'
+  document.documentElement.setAttribute('data-theme', savedTheme)
+})
 </script>
 
 <template>
   <div class="layout-container">
-    <aside class="sidebar glass-panel">
-      <div class="logo-area flex-center">
-        <div class="logo-icon">C</div>
-        <span class="logo-text">Coze Lite</span>
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="brand">
+          <div class="logo-box">C</div>
+          <span class="brand-text">Coze Lite</span>
+        </div>
       </div>
       
       <nav class="nav-menu">
@@ -29,9 +46,26 @@ const navItems = [
           @click="router.push(item.path)"
         >
           <component :is="item.icon" :size="20" />
-          <span>{{ item.name }}</span>
+          <span class="nav-label">{{ item.name }}</span>
         </button>
       </nav>
+
+      <div class="sidebar-footer">
+        <button class="nav-item" @click="toggleTheme">
+          <Moon v-if="isDark" :size="20" />
+          <Sun v-else :size="20" />
+          <span class="nav-label">{{ isDark ? 'Dark Mode' : 'Light Mode' }}</span>
+        </button>
+        <div class="divider"></div>
+        <div class="user-profile">
+          <div class="avatar">U</div>
+          <div class="user-info">
+            <span class="name">User</span>
+            <span class="role">Admin</span>
+          </div>
+          <LogOut :size="16" class="logout-icon" />
+        </div>
+      </div>
     </aside>
     
     <main class="main-content">
@@ -45,7 +79,7 @@ const navItems = [
   display: flex;
   height: 100vh;
   width: 100vw;
-  background-color: transparent;
+  background-color: var(--bg-page);
 }
 
 .sidebar {
@@ -53,76 +87,142 @@ const navItems = [
   height: 100%;
   display: flex;
   flex-direction: column;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-default);
   padding: 24px 16px;
-  border-right: 1px solid var(--glass-border);
-  border-top: none;
-  border-bottom: none;
-  border-left: none;
-  border-radius: 0;
-  z-index: 10;
+  transition: all 0.3s ease;
 }
 
-.logo-area {
-  margin-bottom: 40px;
+.sidebar-top {
+  margin-bottom: 32px;
+  padding: 0 8px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
   gap: 12px;
 }
 
-.logo-icon {
+.logo-box {
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background: linear-gradient(135deg, var(--primary), #818cf8);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  font-size: 18px;
+  font-weight: 700;
   color: white;
+  font-size: 18px;
+  box-shadow: var(--shadow-md);
 }
 
-.logo-text {
-  font-size: 20px;
+.brand-text {
+  font-size: 18px;
   font-weight: 600;
-  background: linear-gradient(to right, #fff, #94a3b8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
 }
 
 .nav-menu {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
+  flex: 1;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
-  border-radius: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
   background: transparent;
   border: none;
-  color: var(--text-muted);
-  font-size: 15px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: left;
+  width: 100%;
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-main);
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
 }
 
 .nav-item.active {
-  background: rgba(99, 102, 241, 0.15);
-  color: var(--text-main);
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  background: var(--primary-bg);
+  color: var(--primary);
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border-default);
+  margin: 4px 0;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.user-profile:hover {
+  background: var(--bg-surface-hover);
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-surface-active);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.role {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.logout-icon {
+  color: var(--text-tertiary);
 }
 
 .main-content {
   flex: 1;
   position: relative;
   overflow: hidden;
+  background: var(--bg-page);
 }
 </style>

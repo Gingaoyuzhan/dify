@@ -1,89 +1,134 @@
 :root {
-  /* Color Palette - Deep Universe/AI Theme */
-  --bg-dark: #0f172a;
-  --bg-darker: #020617;
-  --primary: #6366f1; /* Indigo 500 */
-  --primary-glow: rgba(99, 102, 241, 0.5);
-  --secondary: #ec4899; /* Pink 500 */
-  --secondary-glow: rgba(236, 72, 153, 0.5);
-  
-  /* Text */
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  
-  /* Glassmorphism */
-  --glass-bg: rgba(30, 41, 59, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  
-  /* Layout */
+  /* ========================================================================
+     Design System 2.0 - Semantic Tokens
+     ======================================================================== */
+
+  /* -- Light Mode Defaults (Professional SaaS - Dify/Linear/Vercel inspired) -- */
+  --bg-page: #ffffff;
+  --bg-surface: #f8fafc;
+  /* Slate 50 */
+  --bg-surface-hover: #f1f5f9;
+  /* Slate 100 */
+  --bg-surface-active: #e2e8f0;
+  /* Slate 200 */
+
+  --border-default: #e2e8f0;
+  --border-hover: #cbd5e1;
+
+  --text-primary: #0f172a;
+  /* Slate 900 */
+  --text-secondary: #64748b;
+  /* Slate 500 */
+  --text-tertiary: #94a3b8;
+  /* Slate 400 */
+
+  --primary: #2563eb;
+  /* Blue 600 - Trustworthy Enterprise Blue */
+  --primary-hover: #1d4ed8;
+  --primary-bg: #eff6ff;
+  /* Blue 50 */
+
+  --danger: #ef4444;
+  --danger-bg: #fef2f2;
+  --success: #10b981;
+  --success-bg: #ecfdf5;
+  --warning: #f59e0b;
+  --warning-bg: #fffbeb;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.08);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08);
+
   --sidebar-width: 260px;
-  --header-height: 60px;
-  
-  /* Workflow Node Colors */
-  --node-bg: rgba(30, 41, 59, 0.9);
-  --node-border: rgba(99, 102, 241, 0.3);
-  --handle-color: #f8fafc;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  /* Glass Effects (Subtle in light mode) */
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(226, 232, 240, 0.6);
+  --backdrop-blur: 12px;
 }
 
+/* -- Dark Mode Overrides -- */
+[data-theme='dark'] {
+  --bg-page: #0f172a;
+  /* Slate 900 */
+  --bg-surface: #1e293b;
+  /* Slate 800 */
+  --bg-surface-hover: #334155;
+  /* Slate 700 */
+  --bg-surface-active: #475569;
+  /* Slate 600 */
+
+  --border-default: #334155;
+  /* Slate 700 */
+  --border-hover: #475569;
+  /* Slate 600 */
+
+  --text-primary: #f8fafc;
+  /* Slate 50 */
+  --text-secondary: #94a3b8;
+  /* Slate 400 */
+  --text-tertiary: #64748b;
+  /* Slate 500 */
+
+  --primary: #6366f1;
+  /* Indigo 500 - slightly more vibrant in dark mode */
+  --primary-hover: #818cf8;
+  --primary-bg: rgba(99, 102, 241, 0.15);
+
+  --danger: #f87171;
+  --danger-bg: rgba(239, 68, 68, 0.15);
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+
+  /* Glass Effects (More pronounced in dark mode) */
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+/* Base Reset */
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--bg-darker);
-  background-image: 
-    radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.08) 0%, transparent 25%);
-  color: var(--text-main);
-  overflow: hidden; /* For app-like feel */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
   height: 100vh;
   width: 100vw;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+button {
+  font-family: inherit;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-/* Utilities */
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
+/* Common Utilities */
 .glass-panel {
   background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(var(--backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-sm);
 }
 
 .icon-btn {
   background: transparent;
   border: none;
   cursor: pointer;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   padding: 8px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
@@ -91,6 +136,25 @@ body {
 }
 
 .icon-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-main);
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
 }

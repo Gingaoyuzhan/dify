@@ -1,21 +1,24 @@
 <script setup lang="ts">
-import { ref, nextTick, onMounted, watch } from 'vue'
+import { ref, nextTick } from 'vue'
 import MessageBubble from './MessageBubble.vue'
 import InputArea from './InputArea.vue'
-import { agentApi } from '../../api/agent'
-import type { ChatSession, ChatMessage, MessageSource } from '../../types'
 
-// Props
-const props = defineProps<{
-  session: ChatSession
-}>()
+interface Message {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  sources?: string[]
+  isTyping?: boolean
+}
 
-// 消息列表
-const messages = ref<ChatMessage[]>([])
-// 发送中状态
-const sending = ref(false)
+const messages = ref<Message[]>([
+  {
+    id: '1',
+    role: 'assistant',
+    content: 'Hello! I am your AI assistant. How can I help you optimize your workflow today?',
+  }
+])
 
-// 滚动到底部
 const scrollToBottom = () => {
   const container = document.querySelector('.messages-area')
   if (container) {
@@ -23,125 +26,81 @@ const scrollToBottom = () => {
   }
 }
 
-// 加载消息
-const loadMessages = async () => {
-  if (!props.session.id) return
+const simulateTyping = async (fullText: string, messageId: string) => {
+  const msgIndex = messages.value.findIndex(m => m.id === messageId)
+  if (msgIndex === -1) return
 
-  try {
-    // 如果 session 已经包含消息，直接使用
-    if (props.session.messages && props.session.messages.length > 0) {
-      messages.value = props.session.messages
-    } else {
-      // 否则从 API 获取
-      messages.value = await agentApi.getMessages(props.session.id)
-    }
-    console.log('[Chat] 加载消息:', messages.value.length)
-    await nextTick()
+  const chunkDelay = 30 // ms per chunk
+  const chunkSize = 3 // chars per chunk
+  const msg = messages.value[msgIndex]
+  if (!msg) return
+
+  msg.isTyping = true
+
+  for (let i = 0; i < fullText.length; i += chunkSize) {
+    const currentMsg = messages.value[msgIndex]
+    if (!currentMsg) break
+
+    currentMsg.content += fullText.slice(i, i + chunkSize)
     scrollToBottom()
-  } catch (error) {
-    console.error('[Chat] 加载消息失败:', error)
+    await new Promise(resolve => setTimeout(resolve, chunkDelay))
   }
-}
 
-// 发送消息
-const handleSend = async (text: string) => {
-  if (sending.value || !props.session.id) return
-
-  sending.value = true
-
-  // 先添加用户消息到界面（乐观更新）
-  const tempUserMessage: ChatMessage = {
-    id: `temp-${Date.now()}`,
-    sessionId: props.session.id,
-    role: 'user',
-    content: text,
-    createdAt: new Date().toISOString(),
+  const finalMsg = messages.value[msgIndex]
+  if (finalMsg) {
+    finalMsg.isTyping = false
+    // Add sources at the end
+    finalMsg.sources = ['Knowledge Base v1', 'System Docs']
   }
-  messages.value.push(tempUserMessage)
-
   await nextTick()
   scrollToBottom()
-
-  try {
-    // 调用 API 发送消息
-    const response = await agentApi.chat(props.session.id, { content: text })
-
-    // 替换临时用户消息为真实消息
-    const tempIndex = messages.value.findIndex(m => m.id === tempUserMessage.id)
-    if (tempIndex !== -1) {
-      messages.value[tempIndex] = response.userMessage
-    }
-
-    // 添加 AI 回复
-    messages.value.push(response.assistantMessage)
-    console.log('[Chat] 收到 AI 回复:', response.assistantMessage.content.substring(0, 50))
-
-    await nextTick()
-    scrollToBottom()
-  } catch (error) {
-    console.error('[Chat] 发送消息失败:', error)
-    // 移除临时消息
-    messages.value = messages.value.filter(m => m.id !== tempUserMessage.id)
-    // 显示错误提示
-    messages.value.push({
-      id: `error-${Date.now()}`,
-      sessionId: props.session.id,
-      role: 'assistant',
-      content: '抱歉，发送消息失败，请稍后重试。',
-      createdAt: new Date().toISOString(),
-    })
-  } finally {
-    sending.value = false
-  }
 }
 
-// 格式化来源信息
-const formatSources = (sources?: MessageSource[]): string[] | undefined => {
-  if (!sources || sources.length === 0) return undefined
-  return sources.map(s => s.title)
+const handleSend = async (text: string) => {
+  // Add user message
+  messages.value.push({
+    id: Date.now().toString(),
+    role: 'user',
+    content: text
+  })
+  
+  await nextTick()
+  scrollToBottom()
+  
+  // Simulate AI Response
+  const responseId = (Date.now() + 1).toString()
+  const responseText = `I understand you're asking about **"${text}"**.\n\nBased on the analysis, here are the key points:\n\n1. **Integration**: The system seamlessly connects with your existing stack.\n2. **Performance**: Optimized for low-latency responses.\n3. **Scalability**: Designed to grow with your data needs.\n\nWould you like to explore the *configuration options*?`
+  
+  // Add placeholder for streaming
+  messages.value.push({
+    id: responseId,
+    role: 'assistant',
+    content: '',
+    isTyping: true
+  })
+  
+  await nextTick()
+  scrollToBottom()
+  
+  // Start typing simulation after brief delay
+  setTimeout(() => {
+    simulateTyping(responseText, responseId)
+  }, 600)
 }
-
-// 监听 session 变化
-watch(() => props.session.id, () => {
-  loadMessages()
-}, { immediate: true })
-
-// 初始化
-onMounted(() => {
-  loadMessages()
-})
 </script>
 
 <template>
   <div class="chat-window">
     <div class="messages-area">
-      <!-- 欢迎消息（如果没有消息） -->
-      <div v-if="messages.length === 0" class="welcome-message">
-        <div class="welcome-icon">🤖</div>
-        <h3>你好！我是 AI 助手</h3>
-        <p>有什么我可以帮助你的吗？</p>
-      </div>
-
-      <!-- 消息列表 -->
-      <MessageBubble
-        v-for="msg in messages"
-        :key="msg.id"
-        :id="msg.id"
-        :role="msg.role === 'user' ? 'user' : 'assistant'"
-        :content="msg.content"
-        :sources="formatSources(msg.sources)"
+      <MessageBubble 
+        v-for="msg in messages" 
+        :key="msg.id" 
+        v-bind="msg" 
       />
-
-      <!-- 发送中提示 -->
-      <div v-if="sending" class="typing-indicator">
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-      </div>
     </div>
-
-    <div class="input-wrapper">
-      <InputArea @send="handleSend" :disabled="sending" />
+    
+    <div class="input-section">
+      <InputArea @send="handleSend" />
     </div>
   </div>
 </template>
@@ -151,6 +110,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   height: 100%;
+  background: var(--bg-page);
 }
 
 .messages-area {
@@ -162,73 +122,8 @@ onMounted(() => {
   gap: 24px;
 }
 
-.input-wrapper {
-  padding: 24px;
-  background: linear-gradient(to top, var(--bg-dark) 80%, transparent);
-  margin-bottom: 20px;
-}
-
-/* 欢迎消息 */
-.welcome-message {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--text-muted);
-}
-
-.welcome-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
-}
-
-.welcome-message h3 {
-  font-size: 20px;
-  color: var(--text-main);
-  margin: 0 0 8px 0;
-}
-
-.welcome-message p {
-  margin: 0;
-  font-size: 14px;
-}
-
-/* 输入中动画 */
-.typing-indicator {
-  display: flex;
-  gap: 6px;
-  padding: 16px 20px;
-  background: var(--glass-bg);
-  border-radius: 16px;
-  width: fit-content;
-}
-
-.typing-dot {
-  width: 8px;
-  height: 8px;
-  background: var(--text-muted);
-  border-radius: 50%;
-  animation: typing 1.4s infinite ease-in-out;
-}
-
-.typing-dot:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.typing-dot:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.typing-dot:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes typing {
-  0%, 60%, 100% {
-    transform: translateY(0);
-    opacity: 0.4;
-  }
-  30% {
-    transform: translateY(-8px);
-    opacity: 1;
-  }
+.input-section {
+  padding: 20px 24px 32px;
+  background: linear-gradient(to top, var(--bg-page) 80%, transparent);
 }
 </style>

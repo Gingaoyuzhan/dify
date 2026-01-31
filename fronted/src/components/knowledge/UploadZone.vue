@@ -41,7 +41,7 @@ const onFileChange = (e: Event) => {
 
 <template>
   <div 
-    class="upload-zone glass-panel"
+    class="upload-zone"
     :class="{ dragging: isDragging }"
     @dragover="onDragOver"
     @dragleave="onDragLeave"
@@ -57,29 +57,34 @@ const onFileChange = (e: Event) => {
     />
     
     <div class="content">
-      <div class="icon-wrapper">
+      <div class="icon-circle">
         <UploadCloud :size="24" />
       </div>
-      <p class="title">Click or drag files to upload</p>
-      <p class="subtitle">Supports PDF, TXT, MD, DOCX</p>
+      <div class="text-group">
+        <p class="title">Upload documents</p>
+        <p class="subtitle">Drag & drop or click to browse</p>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
 .upload-zone {
-  border: 2px dashed rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  padding: 40px;
-  text-align: center;
+  border: 1px dashed var(--border-default);
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  padding: 32px;
   cursor: pointer;
   transition: all 0.2s ease;
-  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .upload-zone:hover, .upload-zone.dragging {
   border-color: var(--primary);
-  background: rgba(99, 102, 241, 0.1);
+  background: var(--bg-surface-hover);
 }
 
 .hidden-input {
@@ -90,31 +95,38 @@ const onFileChange = (e: Event) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  pointer-events: none; /* Let parent handle clicks */
+  gap: 16px;
+  text-align: center;
 }
 
-.icon-wrapper {
+.icon-circle {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-surface-active);
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.upload-zone:hover .icon-circle {
+  background: var(--primary-bg);
   color: var(--primary);
-  margin-bottom: 8px;
+  transform: scale(1.1);
 }
 
 .title {
-  margin: 0;
-  font-weight: 500;
-  color: var(--text-main);
+  margin: 0 0 4px 0;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 15px;
 }
 
 .subtitle {
   margin: 0;
   font-size: 13px;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 </style>

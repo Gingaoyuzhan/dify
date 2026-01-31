@@ -1,13 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Send, Paperclip, Mic } from 'lucide-vue-next'
-
-// Props
-const props = withDefaults(defineProps<{
-  disabled?: boolean
-}>(), {
-  disabled: false
-})
+import { Send, Paperclip, Mic, Sparkles } from 'lucide-vue-next'
 
 const emit = defineEmits<{
   (e: 'send', text: string): void
@@ -16,7 +9,7 @@ const emit = defineEmits<{
 const input = ref('')
 
 const send = () => {
-  if (!input.value.trim() || props.disabled) return
+  if (!input.value.trim()) return
   emit('send', input.value)
   input.value = ''
 }
@@ -30,92 +23,145 @@ const onKeydown = (e: KeyboardEvent) => {
 </script>
 
 <template>
-  <div class="input-container glass-panel" :class="{ disabled }">
-    <div class="input-actions">
-      <button class="icon-btn" :disabled="disabled">
-        <Paperclip :size="20" />
-      </button>
+  <div class="input-wrapper">
+    <div class="input-container">
+      <div class="toolbox left">
+        <button class="tool-btn" title="Upload File">
+          <Paperclip :size="18" />
+        </button>
+      </div>
+      
+      <textarea 
+        v-model="input"
+        placeholder="Send a message..." 
+        class="chat-textarea"
+        rows="1"
+        @keydown="onKeydown"
+      ></textarea>
+      
+      <div class="toolbox right">
+        <button class="tool-btn" v-if="!input" title="Voice Input">
+          <Mic :size="18" />
+        </button>
+        <button 
+          class="send-btn" 
+          v-else 
+          @click="send"
+          :disabled="!input.trim()"
+        >
+          <Send :size="16" />
+        </button>
+      </div>
     </div>
-
-    <textarea
-      v-model="input"
-      placeholder="输入消息..."
-      class="chat-input"
-      rows="1"
-      :disabled="disabled"
-      @keydown="onKeydown"
-    ></textarea>
-
-    <div class="input-actions right">
-      <button class="icon-btn" v-if="!input" :disabled="disabled">
-        <Mic :size="20" />
-      </button>
-      <button class="icon-btn send-btn" v-else @click="send" :disabled="disabled">
-        <Send :size="18" />
-      </button>
+    
+    <div class="footer-note">
+      <Sparkles :size="12" />
+      <span>AI can make mistakes. Please verify important information.</span>
     </div>
   </div>
 </template>
 
 <style scoped>
+.input-wrapper {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
 .input-container {
   display: flex;
   align-items: flex-end;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 24px;
-  margin: 0 auto;
-  width: 100%;
-  max-width: 800px;
+  gap: 8px;
+  padding: 8px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
   transition: all 0.2s ease;
 }
 
 .input-container:focus-within {
   border-color: var(--primary);
-  background: rgba(30, 41, 59, 0.8);
+  box-shadow: 0 0 0 2px var(--primary-bg);
 }
 
-.chat-input {
+.chat-textarea {
   flex: 1;
   background: transparent;
   border: none;
-  color: var(--text-main);
+  color: var(--text-primary);
   font-family: inherit;
   font-size: 15px;
   resize: none;
   min-height: 24px;
   max-height: 150px;
-  padding: 4px 0;
+  padding: 8px 0;
   line-height: 1.5;
   outline: none;
 }
 
-.chat-input::placeholder {
-  color: var(--text-muted);
+.chat-textarea::placeholder {
+  color: var(--text-tertiary);
 }
 
-.input-actions {
+.toolbox {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding-bottom: 2px;
+  padding-bottom: 4px; /* Align with bottom of textarea */
+}
+
+.tool-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.tool-btn:hover {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
 }
 
 .send-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
   background: var(--primary);
   color: white;
-  padding: 8px;
-  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .send-btn:hover {
-  background: #4f46e5;
+  background: var(--primary-hover);
   transform: scale(1.05);
 }
 
-/* 禁用状态 */
-.input-container.disabled {
-  opacity: 0.6;
-  pointer-events: none;
+.send-btn:disabled {
+  background: var(--bg-surface-active);
+  color: var(--text-tertiary);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.footer-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--text-tertiary);
 }
 </style>

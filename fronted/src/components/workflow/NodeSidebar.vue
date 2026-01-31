@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Bot, Play, Database, Square, Fingerprint } from 'lucide-vue-next'
+import { Play, Bot, Database, Square, GripVertical, Info } from 'lucide-vue-next'
 
 const onDragStart = (event: DragEvent, nodeType: string, label: string) => {
   if (event.dataTransfer) {
@@ -10,38 +10,24 @@ const onDragStart = (event: DragEvent, nodeType: string, label: string) => {
 </script>
 
 <template>
-  <aside class="nodes-sidebar glass-panel">
+  <aside class="nodes-sidebar">
     <div class="sidebar-header">
-      <h3>Components</h3>
-      <p>Drag to add</p>
+      <h3>Toolbox</h3>
     </div>
     
     <div class="node-list">
+      <div class="section-label">FLOW CONTROL</div>
+      
       <div 
         class="draggable-node" 
         draggable="true" 
         @dragstart="onDragStart($event, 'start', 'Start Node')"
       >
-        <Play :size="16" class="icon start" />
-        <span>Start Trigger</span>
-      </div>
-
-      <div 
-        class="draggable-node" 
-        draggable="true" 
-        @dragstart="onDragStart($event, 'llm', 'LLM Model')"
-      >
-        <Bot :size="16" class="icon llm" />
-        <span>LLM Model</span>
-      </div>
-
-      <div 
-        class="draggable-node" 
-        draggable="true" 
-        @dragstart="onDragStart($event, 'knowledge', 'Knowledge Base')"
-      >
-        <Database :size="16" class="icon knowledge" />
-        <span>Knowledge Retrieval</span>
+        <GripVertical :size="14" class="drag-handle" />
+        <div class="icon-box start">
+          <Play :size="14" />
+        </div>
+        <span class="label">Start Trigger</span>
       </div>
 
       <div 
@@ -49,15 +35,44 @@ const onDragStart = (event: DragEvent, nodeType: string, label: string) => {
         draggable="true" 
         @dragstart="onDragStart($event, 'end', 'End Node')"
       >
-        <Square :size="16" class="icon end" />
-        <span>End / Output</span>
+        <GripVertical :size="14" class="drag-handle" />
+        <div class="icon-box end">
+          <Square :size="14" />
+        </div>
+        <span class="label">End / Output</span>
+      </div>
+
+      <div class="section-label">AI & DATA</div>
+
+      <div 
+        class="draggable-node" 
+        draggable="true" 
+        @dragstart="onDragStart($event, 'llm', 'LLM Model')"
+      >
+        <GripVertical :size="14" class="drag-handle" />
+        <div class="icon-box llm">
+          <Bot :size="14" />
+        </div>
+        <span class="label">LLM Model</span>
+      </div>
+
+      <div 
+        class="draggable-node" 
+        draggable="true" 
+        @dragstart="onDragStart($event, 'knowledge', 'Knowledge Base')"
+      >
+        <GripVertical :size="14" class="drag-handle" />
+        <div class="icon-box knowledge">
+          <Database :size="14" />
+        </div>
+        <span class="label">Knowledge Retrieval</span>
       </div>
     </div>
     
     <div class="sidebar-footer">
       <div class="info-item">
-        <Fingerprint :size="14" />
-        <span>Auto-save enabled</span>
+        <Info :size="14" />
+        <span>Drag nodes to canvas</span>
       </div>
     </div>
   </aside>
@@ -66,79 +81,110 @@ const onDragStart = (event: DragEvent, nodeType: string, label: string) => {
 <style scoped>
 .nodes-sidebar {
   width: 240px;
-  height: 100%;
+  height: calc(100vh - 40px); /* Adjust based on margin/padding */
   display: flex;
   flex-direction: column;
-  border-left: 1px solid var(--glass-border);
-  border-right: none;
-  border-top: none;
-  border-bottom: none;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  margin: 20px 0 20px 20px;
+  box-shadow: var(--shadow-sm);
   z-index: 10;
   position: absolute;
   left: 0;
   top: 0;
-  padding: 20px;
+}
+
+.sidebar-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-default);
 }
 
 .sidebar-header h3 {
-  margin: 0 0 4px 0;
-  font-size: 16px;
+  margin: 0;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--text-main);
-}
-
-.sidebar-header p {
-  margin: 0 0 20px 0;
-  font-size: 12px;
-  color: var(--text-muted);
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .node-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  padding: 16px;
   flex: 1;
+  overflow-y: auto;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  margin-top: 8px;
+  margin-bottom: 4px;
+  padding-left: 4px;
 }
 
 .draggable-node {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 12px;
-  border-radius: 8px;
+  background: var(--bg-page);
+  border: 1px solid var(--border-default);
+  padding: 10px;
+  border-radius: var(--radius-sm);
   cursor: grab;
   display: flex;
   align-items: center;
   gap: 10px;
   transition: all 0.2s ease;
-  font-size: 14px;
 }
 
 .draggable-node:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
-  border-color: rgba(99, 102, 241, 0.3);
+  border-color: var(--primary);
+  background: var(--bg-surface-hover);
+  transform: translateX(2px);
+  box-shadow: var(--shadow-sm);
 }
 
-.draggable-node .icon {
-  opacity: 0.8;
+.drag-handle {
+  color: var(--text-tertiary);
+  cursor: grab;
 }
 
-.draggable-node .icon.start { color: #3b82f6; }
-.draggable-node .icon.llm { color: #6366f1; }
-.draggable-node .icon.knowledge { color: #ec4899; }
-.draggable-node .icon.end { color: #ef4444; }
+.icon-box {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.icon-box.start { background: var(--primary); }
+.icon-box.end { background: var(--danger); }
+.icon-box.llm { background: #8b5cf6; }
+.icon-box.knowledge { background: #ec4899; }
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
 
 .sidebar-footer {
-  margin-top: auto;
-  padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-top: 1px solid var(--border-default);
+  background: var(--bg-surface-active);
+  border-bottom-left-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
 }
 
 .info-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: 12px;
 }
 </style>

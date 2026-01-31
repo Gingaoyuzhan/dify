@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { X, Settings, Trash2 } from 'lucide-vue-next'
+import { X, Settings2, Trash2 } from 'lucide-vue-next'
 import type { Node } from '@vue-flow/core'
 
 const props = defineProps<{
@@ -47,11 +47,11 @@ const deleteNode = () => {
 
 <template>
   <transition name="slide">
-    <aside v-if="node" class="properties-panel glass-panel">
+    <aside v-if="node" class="properties-panel">
       <div class="panel-header">
         <div class="header-title">
-          <Settings :size="16" />
-          <span>Properties</span>
+          <Settings2 :size="16" />
+          <span>Configuration</span>
         </div>
         <button class="icon-btn" @click="$emit('close')">
           <X :size="16" />
@@ -59,17 +59,20 @@ const deleteNode = () => {
       </div>
       
       <div class="panel-content">
-        <div class="form-group">
-          <label>Node ID</label>
-          <input type="text" :value="node.id" disabled class="input disabled" />
+        <div class="node-meta">
+          <span class="meta-label">ID:</span>
+          <code class="meta-value">{{ node.id }}</code>
+          <span class="meta-label">Type:</span>
+          <code class="meta-value">{{ node.type }}</code>
         </div>
         
         <div class="form-group">
-          <label>Label</label>
+          <label>Node Label</label>
           <input 
             v-model="formData.label" 
             type="text" 
             class="input" 
+            placeholder="Name your node"
             @input="saveChanges"
           />
         </div>
@@ -79,17 +82,18 @@ const deleteNode = () => {
           <textarea 
             v-model="formData.description" 
             class="input textarea" 
-            rows="3"
+            rows="4"
+            placeholder="Describe functionality..."
             @input="saveChanges"
           ></textarea>
         </div>
 
-        <div class="divider"></div>
-
-        <button class="btn-delete" @click="deleteNode">
-          <Trash2 :size="14" />
-          <span>Delete Node</span>
-        </button>
+        <div class="actions">
+           <button class="btn-delete" @click="deleteNode">
+            <Trash2 :size="14" />
+            <span>Delete Node</span>
+          </button>
+        </div>
       </div>
     </aside>
   </transition>
@@ -97,23 +101,29 @@ const deleteNode = () => {
 
 <style scoped>
 .properties-panel {
-  width: 300px;
+  width: 320px;
   height: calc(100vh - 40px);
   position: absolute;
   right: 20px;
   top: 20px;
-  border-radius: 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
   z-index: 20;
 }
 
 .panel-header {
-  padding: 16px;
+  padding: 16px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-surface-hover);
+  border-top-left-radius: var(--radius-md);
+  border-top-right-radius: var(--radius-md);
 }
 
 .header-title {
@@ -121,7 +131,8 @@ const deleteNode = () => {
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--text-primary);
+  font-size: 14px;
 }
 
 .panel-content {
@@ -130,7 +141,25 @@ const deleteNode = () => {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+}
+
+.node-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.meta-value {
+  background: var(--bg-surface-active);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-family: monospace;
 }
 
 .form-group {
@@ -140,17 +169,17 @@ const deleteNode = () => {
 }
 
 .form-group label {
-  font-size: 12px;
-  color: var(--text-muted);
+  font-size: 13px;
+  color: var(--text-primary);
   font-weight: 500;
 }
 
 .input {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  padding: 8px 12px;
-  color: var(--text-main);
+  background: var(--bg-page);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  color: var(--text-primary);
   font-size: 14px;
   font-family: inherit;
   outline: none;
@@ -159,53 +188,51 @@ const deleteNode = () => {
 
 .input:focus {
   border-color: var(--primary);
-  background: rgba(0, 0, 0, 0.4);
-}
-
-.input.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  box-shadow: 0 0 0 3px var(--primary-bg);
 }
 
 .textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 100px;
+  line-height: 1.5;
 }
 
-.divider {
-  height: 1px;
-  background: var(--glass-border);
-  margin: 10px 0;
+.actions {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-default);
 }
 
 .btn-delete {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   padding: 10px;
-  border-radius: 6px;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+  border-radius: var(--radius-sm);
+  background: var(--bg-page);
+  border: 1px solid var(--border-default);
+  color: var(--danger);
   cursor: pointer;
   transition: all 0.2s ease;
   font-weight: 500;
+  font-size: 13px;
 }
 
 .btn-delete:hover {
-  background: rgba(239, 68, 68, 0.2);
+  background: var(--danger-bg);
+  border-color: var(--danger);
 }
 
 /* Slide Transition */
 .slide-enter-active,
 .slide-leave-active {
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .slide-enter-from,
 .slide-leave-to {
-  transform: translateX(100%);
-  opacity: 0;
+  transform: translateX(110%);
 }
 </style>

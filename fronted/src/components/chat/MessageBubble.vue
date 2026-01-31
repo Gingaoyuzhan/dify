@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { marked } from 'marked'
-import { User, Bot } from 'lucide-vue-next'
+import { User, Sparkles } from 'lucide-vue-next'
 
 const props = defineProps<{
   role: 'user' | 'assistant'
   content: string
   sources?: string[]
+  isTyping?: boolean
 }>()
 
 const parsedContent = computed(() => {
@@ -17,15 +18,25 @@ const parsedContent = computed(() => {
 <template>
   <div class="message-row" :class="role">
     <div class="avatar">
-      <User v-if="role === 'user'" :size="20" />
-      <Bot v-else :size="20" />
+      <div v-if="role === 'user'" class="avatar-inner user-icon">
+        <User :size="18" />
+      </div>
+      <div v-else class="avatar-inner bot-icon">
+        <Sparkles :size="18" />
+      </div>
     </div>
     
-    <div class="message-content glass-panel">
-      <div v-html="parsedContent" class="markdown-body"></div>
+    <div class="message-group">
+      <div class="sender-name">{{ role === 'user' ? 'You' : 'AI Assistant' }}</div>
+      <div class="bubble">
+        <div v-if="content" v-html="parsedContent" class="markdown-body"></div>
+        <div v-if="isTyping && !content" class="typing-indicator">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
       
-      <div v-if="sources && sources.length > 0" class="sources">
-        <span class="sources-label">Sources:</span>
+      <div v-if="sources && sources.length > 0" class="sources-panel">
+        <span class="sources-label">Citations:</span>
         <div class="source-tags">
           <span v-for="source in sources" :key="source" class="source-tag">
             {{ source }}
@@ -50,88 +61,129 @@ const parsedContent = computed(() => {
 }
 
 .avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.avatar-inner {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
 }
 
-.user .avatar {
-  background: var(--secondary);
+.user-icon {
+  background: var(--bg-surface-active);
+  color: var(--text-primary);
+}
+
+.bot-icon {
+  background: linear-gradient(135deg, var(--primary), #8b5cf6);
   color: white;
 }
 
-.assistant .avatar {
-  background: var(--primary);
-  color: white;
+.message-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 85%;
 }
 
-.message-content {
+.sender-name {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-left: 2px;
+}
+
+.user .sender-name {
+  text-align: right;
+  margin-right: 2px;
+}
+
+.bubble {
   padding: 12px 16px;
-  border-radius: 12px;
-  border-top-left-radius: 2px;
-  color: var(--text-main);
+  border-radius: var(--radius-md);
   line-height: 1.6;
   font-size: 15px;
-  max-width: 80%;
+  box-shadow: var(--shadow-sm);
+  position: relative;
 }
 
-.user .message-content {
+.assistant .bubble {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  border-top-left-radius: 2px;
+}
+
+.user .bubble {
   background: var(--primary);
-  border: none;
-  border-radius: 12px;
+  color: white;
   border-top-right-radius: 2px;
 }
 
-.sources {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+/* Typing Indicator */
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.typing-indicator span {
+  width: 6px;
+  height: 6px;
+  background: var(--text-tertiary);
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+
+/* Sources */
+.sources-panel {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: var(--bg-surface-hover);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--primary);
   font-size: 12px;
 }
 
 .sources-label {
-  color: var(--text-muted);
+  color: var(--text-secondary);
+  font-weight: 500;
   margin-right: 8px;
 }
 
 .source-tags {
-  display: flex;
+  display: inline-flex;
   gap: 6px;
   flex-wrap: wrap;
-  margin-top: 4px;
 }
 
 .source-tag {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 2px 8px;
-  border-radius: 12px;
-  color: var(--text-muted);
+  background: var(--bg-page);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
 }
 
 /* Local Markdown Styles */
 :deep(.markdown-body p) {
-  margin: 0 0 8px 0;
+  margin: 0 0 12px 0;
 }
 
 :deep(.markdown-body p:last-child) {
   margin: 0;
-}
-
-:deep(.markdown-body pre) {
-  background: rgba(0, 0, 0, 0.3);
-  padding: 12px;
-  border-radius: 8px;
-  overflow-x: auto;
-}
-
-:deep(.markdown-body code) {
-  font-family: monospace;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 2px 4px;
-  border-radius: 4px;
 }
 </style>

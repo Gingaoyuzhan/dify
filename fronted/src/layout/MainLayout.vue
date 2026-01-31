@@ -1,228 +1,232 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { Bot, Layers, Database, Sun, Moon, LogOut } from 'lucide-vue-next'
+import { Bot, Layers, Database, LogOut, Command, ChevronRight } from 'lucide-vue-next'
 import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
-
-const isDark = ref(false)
 
 const navItems = [
   { name: 'Workflow', path: '/workflow', icon: Layers },
   { name: 'Knowledge', path: '/knowledge', icon: Database },
   { name: 'Agent', path: '/agent', icon: Bot },
 ]
-
-const toggleTheme = () => {
-  isDark.value = !isDark.value
-  document.documentElement.setAttribute('data-theme', isDark.value ? 'dark' : 'light')
-  localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
-}
-
-onMounted(() => {
-  const savedTheme = localStorage.getItem('theme') || 'light'
-  isDark.value = savedTheme === 'dark'
-  document.documentElement.setAttribute('data-theme', savedTheme)
-})
 </script>
 
 <template>
   <div class="layout-container">
-    <aside class="sidebar">
-      <div class="sidebar-top">
-        <div class="brand">
-          <div class="logo-box">C</div>
-          <span class="brand-text">Coze Lite</span>
+    <header class="top-nav">
+      <div class="brand">
+        <div class="logo-box">
+          <Command :size="24" stroke-width="3" />
         </div>
+        <span class="brand-text">COZE LITE</span>
       </div>
       
-      <nav class="nav-menu">
-        <button 
-          v-for="item in navItems" 
-          :key="item.path"
-          class="nav-item"
-          :class="{ active: route.path.startsWith(item.path) }"
-          @click="router.push(item.path)"
-        >
-          <component :is="item.icon" :size="20" />
-          <span class="nav-label">{{ item.name }}</span>
-        </button>
-      </nav>
-
-      <div class="sidebar-footer">
-        <button class="nav-item" @click="toggleTheme">
-          <Moon v-if="isDark" :size="20" />
-          <Sun v-else :size="20" />
-          <span class="nav-label">{{ isDark ? 'Dark Mode' : 'Light Mode' }}</span>
-        </button>
-        <div class="divider"></div>
-        <div class="user-profile">
-          <div class="avatar">U</div>
-          <div class="user-info">
-            <span class="name">User</span>
-            <span class="role">Admin</span>
-          </div>
-          <LogOut :size="16" class="logout-icon" />
+      <div class="header-actions">
+        <div class="user-badge">
+          <span>ADMIN</span>
         </div>
       </div>
-    </aside>
+    </header>
     
-    <main class="main-content">
-      <router-view />
-    </main>
+    <div class="content-wrapper">
+      <aside class="sidebar">
+        <nav class="nav-menu">
+          <button 
+            v-for="item in navItems" 
+            :key="item.path"
+            class="neo-nav-item neo-press"
+            :class="{ active: route.path.startsWith(item.path) }"
+            @click="router.push(item.path)"
+          >
+            <div class="icon-wrap">
+              <component :is="item.icon" :size="20" stroke-width="2.5" />
+            </div>
+            <span class="nav-label">{{ item.name }}</span>
+            <ChevronRight v-if="route.path.startsWith(item.path)" :size="16" stroke-width="4" class="active-arrow" />
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button class="neo-nav-item danger neo-press">
+            <div class="icon-wrap">
+              <LogOut :size="20" stroke-width="2.5" />
+            </div>
+            <span class="nav-label">LOGOUT</span>
+          </button>
+        </div>
+      </aside>
+      
+      <main class="main-content">
+        <router-view />
+      </main>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .layout-container {
   display: flex;
+  flex-direction: column;
   height: 100vh;
   width: 100vw;
-  background-color: var(--bg-page);
+  background-color: var(--color-primary); 
 }
 
-.sidebar {
-  width: var(--sidebar-width);
-  height: 100%;
+.top-nav {
+  height: var(--header-height);
+  background: var(--bg-page);
+  border-bottom: var(--border-width) solid var(--border-color);
   display: flex;
-  flex-direction: column;
-  background: var(--bg-surface);
-  border-right: 1px solid var(--border-default);
-  padding: 24px 16px;
-  transition: all 0.3s ease;
-}
-
-.sidebar-top {
-  margin-bottom: 32px;
-  padding: 0 8px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 32px;
+  z-index: 100;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .logo-box {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, var(--primary), #818cf8);
-  border-radius: 8px;
+  width: 42px;
+  height: 42px;
+  background: var(--color-primary);
+  border: var(--border-width) solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  color: white;
-  font-size: 18px;
-  box-shadow: var(--shadow-md);
+  box-shadow: 4px 4px 0 0 var(--border-color);
+  color: var(--color-black);
 }
 
 .brand-text {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  text-transform: uppercase;
   color: var(--text-primary);
-  letter-spacing: -0.5px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.neo-btn.small {
+  padding: 8px 16px;
+  font-size: 13px;
+  height: 40px;
+}
+
+.user-badge {
+  background: var(--color-black);
+  color: var(--color-white);
+  padding: 8px 16px;
+  font-weight: 700;
+  font-size: 13px;
+  border: var(--border-width) solid var(--border-color);
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.content-wrapper {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--bg-page);
+  border-right: var(--border-width) solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  padding: 32px 24px;
+  gap: 24px;
 }
 
 .nav-menu {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 16px;
   flex: 1;
 }
 
-.nav-item {
+.neo-nav-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
+  justify-content: flex-start;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-page);
+  border: var(--border-width) solid var(--border-color);
   width: 100%;
-}
-
-.nav-item:hover {
-  background: var(--bg-surface-hover);
-  color: var(--text-primary);
-}
-
-.nav-item.active {
-  background: var(--primary-bg);
-  color: var(--primary);
-}
-
-.sidebar-footer {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.divider {
-  height: 1px;
-  background: var(--border-default);
-  margin: 4px 0;
-}
-
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px;
-  border-radius: var(--radius-sm);
+  text-align: left;
+  position: relative;
+  
+  /* Reset button styles */
+  font-family: inherit;
   cursor: pointer;
-}
-
-.user-profile:hover {
-  background: var(--bg-surface-hover);
-}
-
-.avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--bg-surface-active);
   color: var(--text-primary);
+}
+
+.nav-label {
+  font-weight: 800;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex: 1;
+}
+
+.icon-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  font-size: 14px;
 }
 
-.user-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.active-arrow {
+  animation: slideIn 0.2s ease-out;
 }
 
-.name {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-primary);
+/* Hover State */
+.neo-nav-item:hover {
+  background: var(--bg-surface-secondary);
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 0 var(--border-color);
 }
 
-.role {
-  font-size: 11px;
-  color: var(--text-tertiary);
+/* Active State */
+.neo-nav-item.active {
+  background: var(--color-primary);
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 0 var(--border-color);
 }
 
-.logout-icon {
-  color: var(--text-tertiary);
+.neo-nav-item.active:hover {
+  background: var(--color-primary-dark);
+}
+
+/* Danger Button (Logout) */
+.neo-nav-item.danger:hover {
+  background: var(--color-accent-pink);
+  color: var(--color-black);
 }
 
 .main-content {
   flex: 1;
+  background: var(--bg-surface-secondary); 
   position: relative;
   overflow: hidden;
-  background: var(--bg-page);
+  /* Retro Grid for empty states potentially handled in views */
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-5px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 </style>

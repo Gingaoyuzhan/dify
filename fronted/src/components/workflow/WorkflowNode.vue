@@ -23,43 +23,42 @@ const iconMap = {
 
 const nodeIcon = computed(() => iconMap[props.data.type as keyof typeof iconMap] || Bot)
 
-const typeColor = computed(() => {
+const variantColor = computed(() => {
   switch (props.data.type) {
-    case 'start': return 'var(--primary)'
-    case 'end': return 'var(--danger)'
-    case 'knowledge': return '#ec4899'
-    case 'llm': return '#8b5cf6'
-    default: return 'var(--text-secondary)'
+    case 'start': return 'var(--color-primary)' // Yellow
+    case 'end': return 'var(--color-accent-pink)' // Pink
+    case 'knowledge': return 'var(--color-accent-green)' // Green
+    case 'llm': return 'var(--color-accent-blue)' // Blue
+    default: return 'var(--color-white)'
   }
 })
 </script>
 
 <template>
-  <div class="custom-node" :class="{ selected: selected }">
+  <div class="neo-node" :class="{ selected: selected }">
     <!-- Handles -->
     <Handle 
       v-if="data.type !== 'start'" 
       type="target" 
       :position="Position.Left" 
-      class="node-handle target"
+      class="neo-handle target"
     />
     
-    <div class="node-header">
-      <div class="icon-box" :style="{ color: typeColor, background: `color-mix(in srgb, ${typeColor}, transparent 90%)` }">
-        <component :is="nodeIcon" :size="14" />
+    <div class="neo-node-header" :style="{ backgroundColor: variantColor }">
+      <div class="icon-box">
+        <component :is="nodeIcon" :size="16" stroke-width="3" />
       </div>
       <span class="node-title">{{ data.label }}</span>
       <button class="more-btn">
-        <MoreHorizontal :size="14" />
+        <MoreHorizontal :size="16" stroke-width="3" />
       </button>
     </div>
     
-    <div class="node-body">
+    <div class="neo-node-body">
       <p class="node-desc">{{ data.description || 'No description provided' }}</p>
       
-      <div class="status-indicator" v-if="data.status">
-        <div class="dot" :class="data.status"></div>
-        <span>{{ data.status }}</span>
+      <div class="neo-badge" v-if="data.status">
+        <span>{{ data.status.toUpperCase() }}</span>
       </div>
     </div>
 
@@ -68,58 +67,52 @@ const typeColor = computed(() => {
       v-if="data.type !== 'end'" 
       type="source" 
       :position="Position.Right" 
-      class="node-handle source" 
+      class="neo-handle source" 
     />
   </div>
 </template>
 
 <style scoped>
-.custom-node {
+.neo-node {
   width: 240px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
-  overflow: visible; /* For handles */
+  background: var(--color-white);
+  border: var(--border-width) solid var(--color-black);
+  box-shadow: var(--shadow-hard);
+  transition: all 0.15s ease-in-out;
 }
 
-.custom-node:hover {
-  box-shadow: var(--shadow-md);
-  border-color: var(--border-hover);
-  transform: translateY(-1px);
+.neo-node:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 0 var(--color-black);
 }
 
-.custom-node.selected {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px var(--primary-bg);
+.neo-node.selected {
+  outline: 2px dashed var(--color-black);
+  outline-offset: 4px;
 }
 
-.node-header {
+.neo-node-header {
   padding: 12px;
   display: flex;
   align-items: center;
   gap: 10px;
-  border-bottom: 1px solid var(--border-default);
-  background: var(--bg-surface);
-  border-top-left-radius: var(--radius-md);
-  border-top-right-radius: var(--radius-md);
+  border-bottom: var(--border-width) solid var(--color-black);
+  /* Color set dynamically via variantColor */
 }
 
 .icon-box {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--color-black);
 }
 
 .node-title {
   flex: 1;
-  font-weight: 600;
-  font-size: 13px;
-  color: var(--text-primary);
+  font-weight: 800;
+  font-size: 14px;
+  text-transform: uppercase;
+  color: var(--color-black);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -128,76 +121,50 @@ const typeColor = computed(() => {
 .more-btn {
   background: transparent;
   border: none;
-  color: var(--text-tertiary);
+  color: var(--color-black);
   cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
+  padding: 0;
   display: flex;
 }
 
-.more-btn:hover {
-  background: var(--bg-surface-active);
-  color: var(--text-primary);
-}
-
-.node-body {
+.neo-node-body {
   padding: 12px;
-  background: var(--bg-page); /* Slight contrast for body */
-  border-bottom-left-radius: var(--radius-md);
-  border-bottom-right-radius: var(--radius-md);
+  background: var(--color-white);
 }
 
 .node-desc {
   margin: 0;
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--text-secondary);
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  line-height: 1.4;
+  margin-bottom: 12px;
 }
 
-.status-indicator {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 8px;
-  font-size: 11px;
-  color: var(--text-tertiary);
+.neo-badge {
+  display: inline-block;
+  background: var(--color-black);
+  color: var(--color-white);
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 800;
+  border-radius: 999px; /* Pill shape contrasts with sharp box */
 }
-
-.dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: var(--text-tertiary);
-}
-
-.dot.running { background-color: var(--warning); box-shadow: 0 0 4px var(--warning); }
-.dot.completed { background-color: var(--success); }
-.dot.error { background-color: var(--danger); }
 
 /* Handles */
-.node-handle {
-  width: 8px !important;
-  height: 8px !important;
-  background: var(--bg-surface) !important;
-  border: 2px solid var(--text-tertiary) !important;
-  transition: all 0.2s;
+.neo-handle {
+  width: 12px !important;
+  height: 12px !important;
+  background: var(--color-white) !important;
+  border: var(--border-width) solid var(--color-black) !important;
+  border-radius: 0 !important; /* Square handles */
   z-index: 10;
 }
 
-.node-handle:hover,
-.node-handle.valid {
-  border-color: var(--primary) !important;
-  transform: scale(1.2);
+.neo-handle:hover {
+  background: var(--color-primary) !important;
 }
 
-.custom-node.selected .node-handle {
-  border-color: var(--primary) !important;
-}
-
-.target { left: -5px !important; }
-.source { right: -5px !important; }
+.target { left: -8px !important; }
+.source { right: -8px !important; }
 </style>

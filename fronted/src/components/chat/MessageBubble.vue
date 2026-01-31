@@ -19,15 +19,15 @@ const parsedContent = computed(() => {
   <div class="message-row" :class="role">
     <div class="avatar">
       <div v-if="role === 'user'" class="avatar-inner user-icon">
-        <User :size="18" />
+        <User :size="24" stroke-width="2.5" />
       </div>
       <div v-else class="avatar-inner bot-icon">
-        <Sparkles :size="18" />
+        <Sparkles :size="24" stroke-width="2.5" />
       </div>
     </div>
     
     <div class="message-group">
-      <div class="sender-name">{{ role === 'user' ? 'You' : 'AI Assistant' }}</div>
+      <div class="sender-name">{{ role === 'user' ? 'USER' : 'SYSTEM AI' }}</div>
       <div class="bubble">
         <div v-if="content" v-html="parsedContent" class="markdown-body"></div>
         <div v-if="isTyping && !content" class="typing-indicator">
@@ -36,10 +36,10 @@ const parsedContent = computed(() => {
       </div>
       
       <div v-if="sources && sources.length > 0" class="sources-panel">
-        <span class="sources-label">Citations:</span>
+        <span class="sources-label">SOURCES:</span>
         <div class="source-tags">
           <span v-for="source in sources" :key="source" class="source-tag">
-            {{ source }}
+            {{ source.toUpperCase() }}
           </span>
         </div>
       </div>
@@ -50,8 +50,8 @@ const parsedContent = computed(() => {
 <style scoped>
 .message-row {
   display: flex;
-  gap: 16px;
-  max-width: 800px;
+  gap: 24px;
+  max-width: 900px;
   margin: 0 auto;
   width: 100%;
 }
@@ -62,82 +62,91 @@ const parsedContent = computed(() => {
 
 .avatar {
   flex-shrink: 0;
-  margin-top: 2px;
+  margin-top: 8px; /* Align with top of bubble or name? Bubble top seems better */
 }
 
 .avatar-inner {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-sm);
+  border: var(--border-width) solid var(--color-black);
+  background: var(--color-white);
+  box-shadow: 4px 4px 0 0 var(--color-black);
 }
 
 .user-icon {
-  background: var(--bg-surface-active);
-  color: var(--text-primary);
+  background: var(--color-primary); /* Yellow */
 }
 
 .bot-icon {
-  background: linear-gradient(135deg, var(--primary), #8b5cf6);
-  color: white;
+  background: var(--color-accent-pink);
+  color: var(--color-black);
 }
 
 .message-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  max-width: 85%;
+  gap: 8px;
+  max-width: 75%;
 }
 
 .sender-name {
-  font-size: 12px;
-  color: var(--text-tertiary);
-  margin-left: 2px;
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--color-black);
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
 }
 
 .user .sender-name {
   text-align: right;
-  margin-right: 2px;
 }
 
 .bubble {
-  padding: 12px 16px;
-  border-radius: var(--radius-md);
+  padding: 24px;
+  border: var(--border-width) solid var(--color-black);
   line-height: 1.6;
-  font-size: 15px;
-  box-shadow: var(--shadow-sm);
+  font-size: 16px;
+  font-weight: 500;
   position: relative;
 }
 
+/* Assistant Bubble */
 .assistant .bubble {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  color: var(--text-primary);
-  border-top-left-radius: 2px;
+  background: var(--color-white);
+  color: var(--color-black);
+  box-shadow: 8px 8px 0 0 var(--color-black);
 }
 
+/* User Bubble - High Contrast Fix */
 .user .bubble {
-  background: var(--primary);
-  color: white;
-  border-top-right-radius: 2px;
+  background: var(--color-black);
+  color: var(--color-white);
+  /* White border for separation if on dark bg, but here on light bg black is fine.
+     Let's add a white shadow for "pop" effect on dark themes, or just simple flat black. */
+  box-shadow: -8px 8px 0 0 rgba(0,0,0,0.15); 
+  border-color: var(--color-black);
 }
 
 /* Typing Indicator */
 .typing-indicator {
   display: flex;
-  gap: 4px;
+  gap: 8px;
   padding: 4px 0;
 }
 
 .typing-indicator span {
-  width: 6px;
-  height: 6px;
-  background: var(--text-tertiary);
-  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  background: var(--color-black);
   animation: bounce 1.4s infinite ease-in-out both;
+  border: 2px solid transparent; /* placeholder */
+}
+
+.user .typing-indicator span {
+  background: var(--color-white);
 }
 
 .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
@@ -150,40 +159,64 @@ const parsedContent = computed(() => {
 
 /* Sources */
 .sources-panel {
-  margin-top: 8px;
-  padding: 8px 12px;
-  background: var(--bg-surface-hover);
-  border-radius: var(--radius-sm);
-  border-left: 3px solid var(--primary);
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: var(--bg-surface-secondary);
+  border: 2px solid var(--color-black);
   font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .sources-label {
-  color: var(--text-secondary);
-  font-weight: 500;
-  margin-right: 8px;
+  color: var(--color-black);
+  font-weight: 900;
 }
 
 .source-tags {
-  display: inline-flex;
-  gap: 6px;
+  display: flex;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .source-tag {
-  background: var(--bg-page);
-  padding: 2px 6px;
-  border-radius: 4px;
-  color: var(--text-primary);
-  border: 1px solid var(--border-default);
+  background: var(--color-white);
+  padding: 4px 10px;
+  border: 2px solid var(--color-black);
+  color: var(--color-black);
+  font-weight: 700;
+  font-family: monospace;
+  font-size: 11px;
+}
+
+.source-tag:hover {
+  background: var(--color-primary);
+  cursor: help;
 }
 
 /* Local Markdown Styles */
 :deep(.markdown-body p) {
-  margin: 0 0 12px 0;
+  margin: 0 0 16px 0;
 }
 
 :deep(.markdown-body p:last-child) {
   margin: 0;
+}
+
+:deep(.markdown-body strong) {
+  font-weight: 900;
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+:deep(.markdown-body ul) {
+  padding-left: 20px;
+  margin: 0 0 16px 0;
+}
+
+:deep(.markdown-body li) {
+  margin-bottom: 8px;
 }
 </style>

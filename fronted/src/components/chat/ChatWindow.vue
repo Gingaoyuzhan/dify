@@ -15,7 +15,7 @@ const messages = ref<Message[]>([
   {
     id: '1',
     role: 'assistant',
-    content: 'Hello! I am your AI assistant. How can I help you optimize your workflow today?',
+    content: 'HELLO HUMANS! I AM READY TO PROCESS YOUR DATA.',
   }
 ])
 
@@ -50,7 +50,7 @@ const simulateTyping = async (fullText: string, messageId: string) => {
   if (finalMsg) {
     finalMsg.isTyping = false
     // Add sources at the end
-    finalMsg.sources = ['Knowledge Base v1', 'System Docs']
+    finalMsg.sources = ['DB-X1', 'SYS-LOGS']
   }
   await nextTick()
   scrollToBottom()
@@ -69,7 +69,7 @@ const handleSend = async (text: string) => {
   
   // Simulate AI Response
   const responseId = (Date.now() + 1).toString()
-  const responseText = `I understand you're asking about **"${text}"**.\n\nBased on the analysis, here are the key points:\n\n1. **Integration**: The system seamlessly connects with your existing stack.\n2. **Performance**: Optimized for low-latency responses.\n3. **Scalability**: Designed to grow with your data needs.\n\nWould you like to explore the *configuration options*?`
+  const responseText = `I HAVE ANALYZED YOUR QUERY: **"${text.toUpperCase()}"**.\n\nRESULTS:\n\n1. SYSTEM OPTIMAL.\n2. LATENCY ZERO.\n3. DEPLOYMENT READY.\n\nPROCEED WITH EXECUTION?`
   
   // Add placeholder for streaming
   messages.value.push({
@@ -110,20 +110,24 @@ const handleSend = async (text: string) => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--bg-page);
+  background: var(--bg-surface-secondary);
+  /* Dotted paper background effect */
+  background-image: radial-gradient(var(--text-secondary) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
 .messages-area {
   flex: 1;
-  padding: 24px;
+  padding: 32px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
 }
 
 .input-section {
-  padding: 20px 24px 32px;
-  background: linear-gradient(to top, var(--bg-page) 80%, transparent);
+  padding: 24px 32px 32px;
+  background: var(--color-white);
+  border-top: var(--border-width) solid var(--color-black);
 }
 </style>

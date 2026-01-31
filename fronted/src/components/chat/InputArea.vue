@@ -24,39 +24,37 @@ const onKeydown = (e: KeyboardEvent) => {
 
 <template>
   <div class="input-wrapper">
-    <div class="input-container">
-      <div class="toolbox left">
-        <button class="tool-btn" title="Upload File">
-          <Paperclip :size="18" />
-        </button>
-      </div>
+    <div class="neo-input-group">
+      <button class="icon-btn left neo-press" title="Upload File">
+        <Paperclip :size="24" stroke-width="2.5" />
+      </button>
       
       <textarea 
         v-model="input"
-        placeholder="Send a message..." 
-        class="chat-textarea"
+        placeholder="TYPE COMMAND..." 
+        class="neo-textarea"
         rows="1"
         @keydown="onKeydown"
       ></textarea>
       
-      <div class="toolbox right">
-        <button class="tool-btn" v-if="!input" title="Voice Input">
-          <Mic :size="18" />
+      <div class="right-actions">
+        <button class="icon-btn neo-press" v-if="!input" title="Voice Input">
+          <Mic :size="24" stroke-width="2.5" />
         </button>
         <button 
-          class="send-btn" 
+          class="neo-send-btn neo-press" 
           v-else 
           @click="send"
           :disabled="!input.trim()"
         >
-          <Send :size="16" />
+          <Send :size="24" stroke-width="2.5" />
         </button>
       </div>
     </div>
     
     <div class="footer-note">
-      <Sparkles :size="12" />
-      <span>AI can make mistakes. Please verify important information.</span>
+      <Sparkles :size="14" stroke-width="2.5" />
+      <span>AI GENERATED CONTENT. VERIFY OUTPUTS.</span>
     </div>
   </div>
 </template>
@@ -64,104 +62,104 @@ const onKeydown = (e: KeyboardEvent) => {
 <style scoped>
 .input-wrapper {
   width: 100%;
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
-.input-container {
+.neo-input-group {
   display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  padding: 8px;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-default);
-  background: var(--bg-surface);
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
+  align-items: center;
+  gap: 0;
+  background: var(--color-white);
+  border: var(--border-width) solid var(--color-black);
+  box-shadow: var(--shadow-hard);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  min-height: 64px;
 }
 
-.input-container:focus-within {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px var(--primary-bg);
+.neo-input-group:focus-within {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 0 var(--color-black);
 }
 
-.chat-textarea {
+.neo-textarea {
   flex: 1;
   background: transparent;
   border: none;
-  color: var(--text-primary);
-  font-family: inherit;
-  font-size: 15px;
+  border-left: var(--border-width) solid var(--color-black);
+  border-right: var(--border-width) solid var(--color-black);
+  color: var(--color-black);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px; /* Larger text for impact */
+  font-weight: 700;
   resize: none;
-  min-height: 24px;
-  max-height: 150px;
-  padding: 8px 0;
+  padding: 18px 20px;
   line-height: 1.5;
   outline: none;
+  text-transform: uppercase;
+  height: 64px; /* Match button height */
 }
 
-.chat-textarea::placeholder {
-  color: var(--text-tertiary);
+.neo-textarea::placeholder {
+  color: var(--text-secondary);
+  font-weight: 600;
+  opacity: 0.7;
 }
 
-.toolbox {
-  display: flex;
-  align-items: center;
-  padding-bottom: 4px; /* Align with bottom of textarea */
-}
-
-.tool-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+.icon-btn {
+  width: 64px;
+  height: 64px; /* Square touch targets */
   border: none;
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--color-black);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
 }
 
-.tool-btn:hover {
-  background: var(--bg-surface-hover);
-  color: var(--text-primary);
+.icon-btn:hover {
+  background: var(--bg-surface-secondary);
 }
 
-.send-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+.right-actions {
+  width: 64px;
+  height: 64px;
+  display: flex;
+}
+
+.neo-send-btn {
+  width: 100%;
+  height: 100%;
   border: none;
-  background: var(--primary);
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-black);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
 }
 
-.send-btn:hover {
-  background: var(--primary-hover);
-  transform: scale(1.05);
+.neo-send-btn:hover {
+  background: var(--color-primary-dark);
 }
 
-.send-btn:disabled {
-  background: var(--bg-surface-active);
-  color: var(--text-tertiary);
+.neo-send-btn:disabled {
+  background: var(--bg-surface-secondary);
+  color: var(--text-secondary);
   cursor: not-allowed;
-  transform: none;
 }
 
 .footer-note {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  margin-top: 12px;
+  gap: 8px;
+  margin-top: 16px;
   font-size: 11px;
-  color: var(--text-tertiary);
+  font-weight: 800;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+  opacity: 0.8;
 }
 </style>

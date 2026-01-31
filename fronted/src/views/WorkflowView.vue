@@ -37,10 +37,10 @@ const initialNodes = ref<Node[]>([
 ])
 
 const initialEdges = ref<Edge[]>([
-  { id: 'e1-2', source: '1', target: '2', animated: true, style: { stroke: 'var(--text-tertiary)' } },
-  { id: 'e1-3', source: '1', target: '3', animated: true, style: { stroke: 'var(--text-tertiary)' } },
-  { id: 'e2-4', source: '2', target: '4', animated: true, style: { stroke: 'var(--text-tertiary)' } },
-  { id: 'e3-4', source: '3', target: '4', animated: true, style: { stroke: 'var(--text-tertiary)' } },
+  { id: 'e1-2', source: '1', target: '2', animated: true, style: { stroke: 'var(--color-black)', strokeWidth: '3px' } },
+  { id: 'e1-3', source: '1', target: '3', animated: true, style: { stroke: 'var(--color-black)', strokeWidth: '3px' } },
+  { id: 'e2-4', source: '2', target: '4', animated: true, style: { stroke: 'var(--color-black)', strokeWidth: '3px' } },
+  { id: 'e3-4', source: '3', target: '4', animated: true, style: { stroke: 'var(--color-black)', strokeWidth: '3px' } },
 ])
 
 // -- Vue Flow Hooks --
@@ -127,20 +127,20 @@ const deleteNode = (id: string) => {
         :min-zoom="0.5"
         :max-zoom="4"
         fit-view-on-init
-        class="saas-flow"
+        class="neo-flow"
         @node-click="onNodeClick"
       >
         <template #node-custom="props">
           <WorkflowNode v-bind="props" />
         </template>
         
-        <Background pattern-color="var(--border-default)" :gap="20" :size="2" />
+        <Background pattern-color="var(--color-black)" :gap="24" :size="3" />
         
         <Controls position="top-right" />
         
         <MiniMap 
-          node-color="var(--primary)" 
-          mask-color="var(--bg-surface)" 
+          node-color="var(--color-primary)" 
+          mask-color="rgba(255, 255, 255, 0.7)" 
           class="custom-minimap" 
         />
       </VueFlow>
@@ -160,73 +160,71 @@ const deleteNode = (id: string) => {
 .workflow-container {
   display: flex;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   position: relative;
-  background: var(--bg-page);
+  background: var(--bg-surface-secondary);
 }
 
 .canvas-wrapper {
   flex: 1;
   height: 100%;
-  margin-left: var(--sidebar-width); /* Sidebar is fixed/absolute in this layout design? No, waiting for sidebar update */
-  /* Sidebar handling: The current NodeSidebar seems to be absolute, let's check. 
-     The MainLayout wraps this, but NodeSidebar is inside WorkflowView. 
-     Correction: NodeSidebar in original design was absolute. 
-     We should ensure it works with the layout. */
   position: relative;
   z-index: 1;
+  padding-left: 20px; /* Spacing from Sidebar */
 }
 
 /* Customize Vue Flow Theme */
-.saas-flow {
-  background: var(--bg-page);
+.neo-flow {
+  background: var(--bg-surface-secondary);
 }
 
 :deep(.vue-flow__edge-path) {
-  stroke-width: 2;
-  transition: stroke 0.3s;
+  stroke-width: 3px !important;
+  stroke: var(--color-black) !important;
 }
 
 :deep(.vue-flow__edge.selected .vue-flow__edge-path) {
-  stroke: var(--primary) !important;
+  stroke: var(--color-primary) !important;
+  stroke-dasharray: 4 !important;
 }
 
 /* Controls */
 :deep(.vue-flow__controls) {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-sm);
-  margin: 10px;
+  background: var(--color-white);
+  border: var(--border-width) solid var(--color-black);
+  box-shadow: var(--shadow-hard);
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 :deep(.vue-flow__controls-button) {
-  background: transparent;
-  border-bottom: 1px solid var(--border-default);
+  background: var(--color-white);
+  border-bottom: var(--border-width) solid var(--color-black);
   border-radius: 0;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
+  color: var(--color-black);
 }
 
 :deep(.vue-flow__controls-button:last-child) {
   border-bottom: none;
 }
 
-:deep(.vue-flow__controls-button svg) {
-  fill: var(--text-secondary);
+:deep(.vue-flow__controls-button:hover) {
+  background: var(--color-primary);
 }
 
-:deep(.vue-flow__controls-button:hover svg) {
-  fill: var(--text-primary);
+:deep(.vue-flow__controls-button svg) {
+  fill: var(--color-black);
 }
 
 /* Minimap */
 :deep(.vue-flow__minimap) {
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-default);
-  box-shadow: var(--shadow-sm);
-  background: var(--bg-surface);
-  bottom: 20px;
-  right: 20px;
+  border: var(--border-width) solid var(--color-black);
+  box-shadow: var(--shadow-hard);
+  background: var(--color-white);
+  bottom: 24px;
+  right: 24px;
 }
 </style>

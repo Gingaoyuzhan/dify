@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Play, Bot, Database, Square, GripVertical, Info } from 'lucide-vue-next'
+import { Play, Bot, Database, Square, GripVertical, Plus } from 'lucide-vue-next'
 
 const onDragStart = (event: DragEvent, nodeType: string, label: string) => {
   if (event.dataTransfer) {
@@ -12,83 +12,91 @@ const onDragStart = (event: DragEvent, nodeType: string, label: string) => {
 <template>
   <aside class="nodes-sidebar">
     <div class="sidebar-header">
-      <h3>Toolbox</h3>
+      <h3>COMPONENTS</h3>
     </div>
     
     <div class="node-list">
       <div class="section-label">FLOW CONTROL</div>
       
       <div 
-        class="draggable-node" 
+        class="draggable-node neo-press" 
         draggable="true" 
         @dragstart="onDragStart($event, 'start', 'Start Node')"
       >
-        <GripVertical :size="14" class="drag-handle" />
-        <div class="icon-box start">
-          <Play :size="14" />
+        <div class="grip-box">
+          <GripVertical :size="14" />
         </div>
-        <span class="label">Start Trigger</span>
+        <div class="icon-box start">
+          <Play :size="16" stroke-width="3" />
+        </div>
+        <span class="label">START TRIGGER</span>
+        <Plus :size="14" class="add-icon" />
       </div>
 
       <div 
-        class="draggable-node" 
+        class="draggable-node neo-press" 
         draggable="true" 
         @dragstart="onDragStart($event, 'end', 'End Node')"
       >
-        <GripVertical :size="14" class="drag-handle" />
-        <div class="icon-box end">
-          <Square :size="14" />
+         <div class="grip-box">
+          <GripVertical :size="14" />
         </div>
-        <span class="label">End / Output</span>
+        <div class="icon-box end">
+          <Square :size="16" stroke-width="3" />
+        </div>
+        <span class="label">END / OUTPUT</span>
+        <Plus :size="14" class="add-icon" />
       </div>
 
       <div class="section-label">AI & DATA</div>
 
       <div 
-        class="draggable-node" 
+        class="draggable-node neo-press" 
         draggable="true" 
         @dragstart="onDragStart($event, 'llm', 'LLM Model')"
       >
-        <GripVertical :size="14" class="drag-handle" />
-        <div class="icon-box llm">
-          <Bot :size="14" />
+         <div class="grip-box">
+          <GripVertical :size="14" />
         </div>
-        <span class="label">LLM Model</span>
+        <div class="icon-box llm">
+          <Bot :size="16" stroke-width="3" />
+        </div>
+        <span class="label">LLM MODEL</span>
+        <Plus :size="14" class="add-icon" />
       </div>
 
       <div 
-        class="draggable-node" 
+        class="draggable-node neo-press" 
         draggable="true" 
         @dragstart="onDragStart($event, 'knowledge', 'Knowledge Base')"
       >
-        <GripVertical :size="14" class="drag-handle" />
-        <div class="icon-box knowledge">
-          <Database :size="14" />
+         <div class="grip-box">
+          <GripVertical :size="14" />
         </div>
-        <span class="label">Knowledge Retrieval</span>
+        <div class="icon-box knowledge">
+          <Database :size="16" stroke-width="3" />
+        </div>
+        <span class="label">KNOWLEDGE</span>
+        <Plus :size="14" class="add-icon" />
       </div>
     </div>
     
     <div class="sidebar-footer">
-      <div class="info-item">
-        <Info :size="14" />
-        <span>Drag nodes to canvas</span>
-      </div>
+      <span>DRAG TO ADD</span>
     </div>
   </aside>
 </template>
 
 <style scoped>
 .nodes-sidebar {
-  width: 240px;
-  height: calc(100vh - 40px); /* Adjust based on margin/padding */
+  width: 260px;
+  height: calc(100vh - 40px);
   display: flex;
   flex-direction: column;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
+  background: var(--color-white);
+  border: var(--border-width) solid var(--color-black);
   margin: 20px 0 20px 20px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-hard);
   z-index: 10;
   position: absolute;
   left: 0;
@@ -97,14 +105,15 @@ const onDragStart = (event: DragEvent, nodeType: string, label: string) => {
 
 .sidebar-header {
   padding: 16px;
-  border-bottom: 1px solid var(--border-default);
+  border-bottom: var(--border-width) solid var(--color-black);
+  background: var(--color-primary);
 }
 
 .sidebar-header h3 {
   margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--color-black);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -112,79 +121,88 @@ const onDragStart = (event: DragEvent, nodeType: string, label: string) => {
 .node-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 16px;
+  gap: 12px;
+  padding: 20px;
   flex: 1;
   overflow-y: auto;
 }
 
 .section-label {
   font-size: 11px;
-  font-weight: 600;
-  color: var(--text-tertiary);
-  margin-top: 8px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  background: var(--bg-surface-secondary);
+  padding: 4px 8px;
+  border: 1px solid var(--color-black);
+  display: inline-block;
+  align-self: flex-start;
   margin-bottom: 4px;
-  padding-left: 4px;
 }
 
 .draggable-node {
-  background: var(--bg-page);
-  border: 1px solid var(--border-default);
-  padding: 10px;
-  border-radius: var(--radius-sm);
+  background: var(--color-white);
+  border: var(--border-width) solid var(--color-black);
+  padding: 12px;
   cursor: grab;
   display: flex;
   align-items: center;
-  gap: 10px;
-  transition: all 0.2s ease;
+  gap: 12px;
+  position: relative;
 }
 
+/* Hover effect handled by .neo-press global class, but we add border color shift */
 .draggable-node:hover {
-  border-color: var(--primary);
-  background: var(--bg-surface-hover);
-  transform: translateX(2px);
-  box-shadow: var(--shadow-sm);
+  border-color: var(--color-black);
+  background: var(--bg-surface-secondary);
+  /* Neo-press handles translate/shadow */
 }
 
-.drag-handle {
-  color: var(--text-tertiary);
-  cursor: grab;
+.grip-box {
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
 }
 
 .icon-box {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--color-black);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  background: var(--color-white);
+  color: var(--color-black);
 }
 
-.icon-box.start { background: var(--primary); }
-.icon-box.end { background: var(--danger); }
-.icon-box.llm { background: #8b5cf6; }
-.icon-box.knowledge { background: #ec4899; }
+.icon-box.start { background: var(--color-primary); }
+.icon-box.end { background: var(--color-accent-pink); }
+.icon-box.llm { background: var(--color-accent-blue); }
+.icon-box.knowledge { background: var(--color-accent-green); }
 
 .label {
   font-size: 13px;
-  font-weight: 500;
-  color: var(--text-primary);
+  font-weight: 800;
+  color: var(--color-black);
+  flex: 1;
+}
+
+.add-icon {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.draggable-node:hover .add-icon {
+  opacity: 1;
 }
 
 .sidebar-footer {
   padding: 12px;
-  border-top: 1px solid var(--border-default);
-  background: var(--bg-surface-active);
-  border-bottom-left-radius: var(--radius-md);
-  border-bottom-right-radius: var(--radius-md);
-}
-
-.info-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  border-top: var(--border-width) solid var(--color-black);
+  background: var(--bg-surface-secondary);
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
   color: var(--text-secondary);
-  font-size: 12px;
+  letter-spacing: 1px;
 }
 </style>

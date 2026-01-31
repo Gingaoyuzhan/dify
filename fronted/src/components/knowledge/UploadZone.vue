@@ -41,7 +41,7 @@ const onFileChange = (e: Event) => {
 
 <template>
   <div 
-    class="upload-zone"
+    class="neo-upload"
     :class="{ dragging: isDragging }"
     @dragover="onDragOver"
     @dragleave="onDragLeave"
@@ -57,22 +57,21 @@ const onFileChange = (e: Event) => {
     />
     
     <div class="content">
-      <div class="icon-circle">
-        <UploadCloud :size="24" />
+      <div class="icon-box">
+        <UploadCloud :size="32" stroke-width="2.5" />
       </div>
       <div class="text-group">
-        <p class="title">Upload documents</p>
-        <p class="subtitle">Drag & drop or click to browse</p>
+        <p class="title">UPLOAD FILES</p>
+        <p class="subtitle">DRAG & DROP OR CLICK TO BROWSE</p>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.upload-zone {
-  border: 1px dashed var(--border-default);
-  background: var(--bg-surface);
-  border-radius: var(--radius-md);
+.neo-upload {
+  border: 3px dashed var(--color-black);
+  background: var(--bg-surface-secondary);
   padding: 32px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -80,11 +79,19 @@ const onFileChange = (e: Event) => {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
-.upload-zone:hover, .upload-zone.dragging {
-  border-color: var(--primary);
-  background: var(--bg-surface-hover);
+.neo-upload:hover, .neo-upload.dragging {
+  border-style: solid;
+  background: var(--color-white);
+  box-shadow: var(--shadow-hard);
+  transform: translate(-4px, -4px);
+}
+
+.neo-upload:active {
+  transform: translate(0, 0);
+  box-shadow: none;
 }
 
 .hidden-input {
@@ -95,38 +102,35 @@ const onFileChange = (e: Event) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
   text-align: center;
 }
 
-.icon-circle {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--bg-surface-active);
-  color: var(--text-primary);
+.icon-box {
+  width: 64px;
+  height: 64px;
+  background: var(--color-white);
+  border: var(--border-width) solid var(--color-black);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
-}
-
-.upload-zone:hover .icon-circle {
-  background: var(--primary-bg);
-  color: var(--primary);
-  transform: scale(1.1);
+  color: var(--color-black);
+  box-shadow: 4px 4px 0 0 var(--color-black);
 }
 
 .title {
-  margin: 0 0 4px 0;
-  font-weight: 600;
-  color: var(--text-primary);
-  font-size: 15px;
+  margin: 0 0 6px 0;
+  font-weight: 800;
+  color: var(--color-black);
+  font-size: 18px;
+  letter-spacing: -0.5px;
 }
 
 .subtitle {
   margin: 0;
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 700;
   color: var(--text-secondary);
+  font-family: monospace;
 }
 </style>
